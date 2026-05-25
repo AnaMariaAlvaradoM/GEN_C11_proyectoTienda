@@ -1,5 +1,6 @@
 package com.cohorte11.primerProyecto.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class Orden {
     @Column(nullable = false)
     private EstadoOrden estado;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;

@@ -1,6 +1,9 @@
 package com.cohorte11.primerProyecto.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +18,21 @@ public class Cliente {
     @Column(nullable = false)
     private String nombre;
 
+    @NotBlank(message = "No debe quedar vacio")
+    @Email(message = "El email debe tener formato valido")
     @Column(nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RolCliente rol;
+    private Rol rol;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Orden> ordenes = new ArrayList<>();
 
     public Cliente() {
-        this.rol = RolCliente.CLIENTE;
+        this.rol = Rol.CLIENTE;
     }
 
     public Cliente(String nombre, String email,  List<Orden> ordenes) {
@@ -63,11 +69,11 @@ public class Cliente {
         this.ordenes = ordenes;
     }
 
-    public RolCliente getRol() {
+    public Rol getRol() {
         return rol;
     }
 
-    public void setRol(RolCliente rol) {
+    public void setRol(Rol rol) {
         this.rol = rol;
     }
 }

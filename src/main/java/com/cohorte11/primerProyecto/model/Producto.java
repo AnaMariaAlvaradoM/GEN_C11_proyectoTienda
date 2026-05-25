@@ -1,6 +1,9 @@
 package com.cohorte11.primerProyecto.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="productos")
@@ -10,9 +13,12 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El nombre tiene que estar")
     @Column(nullable = false)
     private String nombre;
 
+    @NotNull(message = "El precio es obligatorio")
+    @Min(value = 0, message = "El precio no puede ser negativo")
     @Column(nullable = false)
     private Double precio;
 

@@ -1,6 +1,6 @@
 package com.cohorte11.primerProyecto.model;
 
-public enum RolCliente {
+public enum Rol {
     ADMIN,
     CLIENTE
 }

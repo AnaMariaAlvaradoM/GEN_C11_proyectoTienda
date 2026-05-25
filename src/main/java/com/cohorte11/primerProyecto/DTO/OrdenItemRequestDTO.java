@@ -1,9 +1,16 @@
 package com.cohorte11.primerProyecto.DTO;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class OrdenItemRequestDTO {
+
 
     private Long ordenId;
     private Long productoId;
+
+    @NotNull(message = "No queda vaico")
+    @Min(value = 1, message = "Cantidad minn es 1")
     private Integer cantidad;
     private Double precioUnitario;
 
