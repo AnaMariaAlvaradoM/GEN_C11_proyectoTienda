@@ -1,6 +1,7 @@
 package com.cohorte11.primerProyecto.auth;
 
 
+import com.cohorte11.primerProyecto.model.Cliente;
 import com.cohorte11.primerProyecto.model.Rol;
 import com.cohorte11.primerProyecto.model.Usuario;
 import com.cohorte11.primerProyecto.repository.UsuarioRepository;
@@ -41,20 +42,21 @@ public class AuthController {
     // Si el email ya existe, retorna 400 Bad Request.
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
-
         if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "El email ya está registrado"));
+                    .body(Map.of("error", "El email ya esta registrado"));
         }
 
-        // Hashear la contraseña antes de guardar.
-        // NUNCA se guarda la contraseña en texto plano.
         Usuario usuario = new Usuario(
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
                 request.getNombre(),
-                request.getRol() != null ? request.getRol() : Rol.CLIENTE
+                Rol.CLIENTE  // siempre CLIENTE — el rol no viene del cliente
         );
+
+        // Todo registro crea su Cliente asociado automáticamente.
+        Cliente cliente = new Cliente(request.getNombre(), request.getEmail());
+        usuario.setCliente(cliente);
 
         usuarioRepository.save(usuario);
 
@@ -92,6 +94,23 @@ public class AuthController {
                 "email", usuario.getEmail(),
                 "rol", usuario.getRol(),
                 "nombre", usuario.getNombre()
+        ));
+    }
+
+
+    @PutMapping("/promover/{email}")
+    public ResponseEntity<?> promoverAdmin(@PathVariable String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Usuario no encontrado"));
+        }
+        usuario.setRol(Rol.ADMIN);
+        usuarioRepository.save(usuario);
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "Usuario promovido a ADMIN",
+                "email", usuario.getEmail(),
+                "rol", usuario.getRol()
         ));
     }
 }

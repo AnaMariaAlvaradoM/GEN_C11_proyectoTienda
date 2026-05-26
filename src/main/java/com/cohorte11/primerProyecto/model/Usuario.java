@@ -33,6 +33,12 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private Rol rol;
 
+    // La relación es opcional porque los ADMIN no tienen Cliente asociado.
+// cascade = ALL: si se elimina el Usuario, se elimina el Cliente también.
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cliente_id", referencedColumnName = "id")
+    private Cliente cliente;
+
     // Constructor vacío obligatorio para JPA.
     public Usuario() {}
 
@@ -87,4 +93,6 @@ public class Usuario implements UserDetails {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public Rol getRol() { return rol; }
     public void setRol(Rol rol) { this.rol = rol; }
+    public Cliente getCliente() { return cliente; }
+    public void setCliente(Cliente cliente) { this.cliente = cliente; }
 }
