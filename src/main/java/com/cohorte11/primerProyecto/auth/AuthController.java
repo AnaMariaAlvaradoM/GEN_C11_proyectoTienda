@@ -71,30 +71,56 @@ public class AuthController {
     // AuthenticationManager, y si son correctas genera y devuelve el token.
     // Si las credenciales son incorrectas, Spring Security lanza una excepción
     // que retorna automáticamente 401 Unauthorized.
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
+//
+//        // authenticate lanza BadCredentialsException si las credenciales no coinciden.
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        request.getEmail(),
+//                        request.getPassword()
+//                )
+//        );
+//
+//        // Si llegamos aquí, la autenticación fue exitosa.
+//        // getPrincipal() retorna el UserDetails del usuario autenticado.
+//        Usuario usuario = (Usuario) authentication.getPrincipal();
+//
+//        // Generar el token JWT con los datos del usuario.
+//        String token = jwtUtil.generateToken(usuario);
+//
+//        return ResponseEntity.ok(Map.of(
+//                "token", token,
+//                "email", usuario.getEmail(),
+//                "rol", usuario.getRol(),
+//                "nombre", usuario.getNombre()
+//        ));
+//    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
-
-        // authenticate lanza BadCredentialsException si las credenciales no coinciden.
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        // Si llegamos aquí, la autenticación fue exitosa.
-        // getPrincipal() retorna el UserDetails del usuario autenticado.
-        Usuario usuario = (Usuario) authentication.getPrincipal();
-
-        // Generar el token JWT con los datos del usuario.
-        String token = jwtUtil.generateToken(usuario);
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "email", usuario.getEmail(),
-                "rol", usuario.getRol(),
-                "nombre", usuario.getNombre()
-        ));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+            Usuario usuario = (Usuario) authentication.getPrincipal();
+            System.out.println("Usuario autenticado: " + usuario.getEmail());
+            String token = jwtUtil.generateToken(usuario);
+            System.out.println("Token generado: " + token);
+            return ResponseEntity.ok(Map.of(
+                    "token", token,
+                    "email", usuario.getEmail(),
+                    "rol", usuario.getRol(),
+                    "nombre", usuario.getNombre()
+            ));
+        } catch (Exception e) {
+            System.out.println("ERROR EN LOGIN: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
 

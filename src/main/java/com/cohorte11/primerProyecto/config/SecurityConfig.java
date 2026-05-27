@@ -38,35 +38,35 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Swagger: público durante el desarrollo.
+                        // Swagger: público
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // Endpoints de autenticación: públicos — son la puerta de entrada.
-                        .requestMatchers("/auth/**").permitAll()
+                        // Auth público — DEBE ir antes que cualquier regla específica de /auth/**
+                        .requestMatchers("/auth/register", "/auth/login").permitAll()
 
-                        // Consultas (GET): accesibles para CLIENTE y ADMIN.
+                        // Promover: solo ADMIN
+                        .requestMatchers(HttpMethod.PUT, "/auth/promover/**").hasRole("ADMIN")
+
+                        // GET: CLIENTE y ADMIN
                         .requestMatchers(HttpMethod.GET, "/productos/**").hasAnyRole("ADMIN", "CLIENTE")
                         .requestMatchers(HttpMethod.GET, "/clientes/**").hasAnyRole("ADMIN", "CLIENTE")
                         .requestMatchers(HttpMethod.GET, "/ordenes/**").hasAnyRole("ADMIN", "CLIENTE")
 
-                        // Modificaciones: solo ADMIN puede crear, actualizar o eliminar.
+                        // Solo ADMIN
                         .requestMatchers(HttpMethod.POST, "/productos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/productos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/productos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/auth/promover/**").hasRole("ADMIN")
-
                         .requestMatchers(HttpMethod.POST, "/clientes/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/clientes/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/clientes/**").hasRole("ADMIN")
 
-                        // Órdenes: CLIENTE puede crear y ver sus propias órdenes.
+                        // Órdenes
                         .requestMatchers(HttpMethod.POST, "/ordenes/**").hasAnyRole("ADMIN", "CLIENTE")
 
-                        // Todo lo demás requiere autenticación.
                         .anyRequest().authenticated()
                 )
 
